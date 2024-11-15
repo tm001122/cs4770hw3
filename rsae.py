@@ -13,27 +13,21 @@ def rsa_encrypt_string(input_string, e, n):
         encrypted_bytes.append(encrypted_byte)
     return encrypted_bytes
 
-def write_encrypted_to_file_as_hex(encrypted_bytes, filename):
-    """Writes encrypted bytes to a file in hex format, ensuring ASCII compatibility."""
-    with open(filename, 'w') as file:
-        for encrypted_byte in encrypted_bytes:
-            hex_value = format(encrypted_byte, 'x')  # Convert to hex
-            file.write(f"{hex_value} ")
-
 def main():
     # Read the input ASCII string from stdin
-    input_string = input("Enter ASCII string to encrypt: ")
+    sys.stderr.write("Enter ASCII string to encrypt: ")
+    input_string = input().strip()
+    
     # Read e and n from stdin
-    e, n = map(int, input("Enter public key (e, n) separated by a space: ").split())
+    sys.stderr.write("Enter public key (e, n) separated by a space: ")
+    e, n = map(int, input().strip().split())
 
     # Encrypt the input string
     encrypted_bytes = rsa_encrypt_string(input_string, e, n)
 
-    # Specify the output file name
-    output_filename = "encrypted_output.txt"
-    write_encrypted_to_file_as_hex(encrypted_bytes, output_filename)
-
-    print(f"Encrypted bytes written to {output_filename} in hex format")
+    # Write the encrypted bytes as hex to standard output
+    encrypted_hex = ' '.join(format(byte, 'x') for byte in encrypted_bytes)
+    print(encrypted_hex)
 
 if __name__ == "__main__":
     main()

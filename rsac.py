@@ -1,25 +1,22 @@
 import math
+import sys
 
 def rsa_decrypt_byte(encrypted_byte, d, n):
     """Decrypts a single byte using RSA."""
     return pow(encrypted_byte, d, n)
 
-def rsa_decrypt_string_from_file(filename, d, n):
-    """Reads the encrypted hex values from a file, decrypts them, and returns the decrypted string."""
+def rsa_decrypt_string_from_input(hex_string, d, n):
+    """Decrypts the space-separated hex values provided as input."""
     decrypted_chars = []
 
-    with open(filename, 'r') as file:
-        # Read the single line containing space-separated hex values
-        line = file.readline().strip()
+    # Split the hex string by spaces to get individual hex values
+    hex_values = hex_string.split()
 
-        # Split the line by space to get individual hex values
-        hex_values = line.split()
-
-        # Process each hex value and decrypt
-        for hex_value in hex_values:
-            encrypted_byte = int(hex_value, 16)  # Convert the hex value to an integer
-            decrypted_byte = rsa_decrypt_byte(encrypted_byte, d, n)  # Decrypt the byte
-            decrypted_chars.append(chr(decrypted_byte))  # Convert to char and append to result list
+    # Process each hex value and decrypt
+    for hex_value in hex_values:
+        encrypted_byte = int(hex_value, 16)  # Convert the hex value to an integer
+        decrypted_byte = rsa_decrypt_byte(encrypted_byte, d, n)  # Decrypt the byte
+        decrypted_chars.append(chr(decrypted_byte))  # Convert to char and append to result list
 
     return ''.join(decrypted_chars)  # Join the decrypted characters into a string
 
@@ -59,19 +56,22 @@ def mod_inverse(a, m):
     return x1
 
 def main():
-    # Specify the input file name
-    input_filename = "encrypted_output.txt"
+    # Prompt for the hex-encoded ciphertext
+    sys.stderr.write("Enter hex-encoded ciphertext: ")
+    hex_string = input().strip()
     
-    # Read e and n from stdin
-    e, n = map(int, input("Enter public key (e, n) separated by a space: ").split())
+    # Prompt for the public key
+    sys.stderr.write("Enter public key (e, n) separated by a space: ")
+    e, n = map(int, input().strip().split())
 
     # Step 1: Find private key d using the public key (e, n)
     d = find_private_key(e, n)
 
-    # Step 2: Decrypt the string from the file
-    decrypted_string = rsa_decrypt_string_from_file(input_filename, d, n)
+    # Step 2: Decrypt the string from the input
+    decrypted_string = rsa_decrypt_string_from_input(hex_string, d, n)
 
-    print("Decrypted string:", decrypted_string)
+    # Output the decrypted string to stdout
+    print(decrypted_string)
 
 if __name__ == "__main__":
     main()
